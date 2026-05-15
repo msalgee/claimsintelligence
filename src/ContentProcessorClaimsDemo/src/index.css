@@ -1,0 +1,46 @@
+/* Raleway is the demo's display typeface (RalewayMedium / 500). */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap');
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Raleway', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  /* Default body background — overridden per theme below. Light mode is the
+     default to match the demo's predominantly white surfaces. */
+  background-color: #FFFFFF;
+}
+
+body[data-theme='dark'] {
+  background-color: #001272;
+}
+
+body[data-theme='light'] {
+  background-color: #FFFFFF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 18, 114, 0.18);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 18, 114, 0.32);
+}
+body[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+body[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

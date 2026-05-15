@@ -1,0 +1,135 @@
+{
+  "baseAnalyzerId": "prebuilt-image",
+  "description": "Visual damage assessment from a vehicle photograph. Flat schema (no deep nesting) optimized for the prebuilt-image base analyzer.",
+  "config": {
+    "returnDetails": true
+  },
+  "fieldSchema": {
+    "name": "DamagedVehicleImageAssessment",
+    "fields": {
+      "view_angle": {
+        "type": "string",
+        "method": "classify",
+        "enum": [
+          "front",
+          "front-left",
+          "front-right",
+          "left-side",
+          "right-side",
+          "rear-left",
+          "rear-right",
+          "rear",
+          "top",
+          "underneath",
+          "interior",
+          "unknown"
+        ],
+        "description": "Primary camera viewing angle relative to the vehicle. Determine FIRST: if you can see the FRONT (grille/headlights), apply the mirror rule (image-right = vehicle LEFT). If you can see the REAR (tail lights/trunk), image-right = vehicle RIGHT. Left/right is the VEHICLE's own left/right (driver-perspective facing forward), NOT the image's left/right."
+      },
+      "camera_description": {
+        "type": "string",
+        "method": "generate",
+        "description": "One-sentence description of the camera position and angle, e.g. 'Slightly elevated front-left view showing hood, front bumper, and left fender.'"
+      },
+      "vehicle_count": {
+        "type": "integer",
+        "method": "generate",
+        "description": "Number of distinct vehicles visible in the image."
+      },
+      "vehicle_type": {
+        "type": "string",
+        "method": "generate",
+        "description": "Primary vehicle body type, e.g. sedan, SUV, pickup, hatchback, coupe, van."
+      },
+      "vehicle_make": {
+        "type": "string",
+        "method": "generate",
+        "description": "Manufacturer of the primary vehicle, e.g. Toyota, Ford, Honda. Empty string if not determinable."
+      },
+      "vehicle_model": {
+        "type": "string",
+        "method": "generate",
+        "description": "Model of the primary vehicle, e.g. Camry, F-150, Civic. Empty string if not determinable."
+      },
+      "vehicle_color": {
+        "type": "string",
+        "method": "generate",
+        "description": "Primary color of the vehicle, e.g. silver, black, white."
+      },
+      "model_year_estimate": {
+        "type": "string",
+        "method": "generate",
+        "description": "Approximate model year or year range based on visible styling, e.g. '2018-2021'. Empty string if not determinable."
+      },
+      "license_plate_visible": {
+        "type": "boolean",
+        "method": "generate",
+        "description": "True if a license plate is visible in the image."
+      },
+      "license_plate_text": {
+        "type": "string",
+        "method": "generate",
+        "description": "License plate text if clearly readable; empty string otherwise."
+      },
+      "visible_vehicle_parts": {
+        "type": "array",
+        "items": { "type": "string" },
+        "method": "generate",
+        "description": "List of vehicle parts/panels visible in the image given the camera angle, e.g. ['hood','front bumper','front-left fender','front-left headlight']. Left/right MUST use the VEHICLE's own frame of reference and MUST match view_angle."
+      },
+      "has_visible_damage": {
+        "type": "boolean",
+        "method": "generate",
+        "description": "True if any damage is visible on the vehicle."
+      },
+      "overall_severity": {
+        "type": "string",
+        "method": "classify",
+        "enum": ["none", "minor", "moderate", "severe"],
+        "description": "Overall damage severity for the vehicle as visible in this image."
+      },
+      "damage_locations": {
+        "type": "array",
+        "items": { "type": "string" },
+        "method": "generate",
+        "description": "Locations on the vehicle where damage is visible, using VEHICLE's own left/right (matching view_angle). Examples: 'front-left fender', 'rear-right quarter panel', 'driver-side door'."
+      },
+      "damage_types": {
+        "type": "array",
+        "items": { "type": "string" },
+        "method": "generate",
+        "description": "Types of damage observed, e.g. ['scratch','dent','crack','broken-headlight','paint-transfer','crumpled-panel','shattered-glass']."
+      },
+      "affected_parts": {
+        "type": "array",
+        "items": { "type": "string" },
+        "method": "generate",
+        "description": "Distinct parts/panels affected by damage. Side labels MUST match view_angle. Examples: ['front bumper','left fender','left headlight assembly']."
+      },
+      "damage_description": {
+        "type": "string",
+        "method": "generate",
+        "description": "2-4 sentence narrative description of the damage observed: where it is, what type, how severe, and any noteworthy details (e.g. paint transfer, fluid leaks, deployed airbags through windshield)."
+      },
+      "estimated_repair_complexity": {
+        "type": "string",
+        "method": "classify",
+        "enum": ["none", "cosmetic_only", "panel_repair", "panel_replacement", "structural_repair", "total_loss_likely"],
+        "description": "Rough repair complexity tier based on visible damage."
+      },
+      "scene_context": {
+        "type": "string",
+        "method": "generate",
+        "description": "Brief description of the surroundings if relevant (e.g. 'parking lot in daylight', 'roadside at night with rain'). Empty string if not relevant."
+      },
+      "image_quality_notes": {
+        "type": "string",
+        "method": "generate",
+        "description": "Caveats about image quality that limit assessment, e.g. 'low light obscures rear quarter panel', 'reflection on hood'. Empty string if image is clear."
+      }
+    }
+  },
+  "models": {
+    "completion": "gpt-4.1-mini"
+  }
+}

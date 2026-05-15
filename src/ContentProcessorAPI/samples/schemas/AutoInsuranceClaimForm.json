@@ -1,0 +1,333 @@
+{
+  "baseAnalyzerId": "prebuilt-document",
+  "description": "Extracts structured claimant, vehicle, incident, witness, and authority fields from a US auto insurance claim form (FNOL).",
+  "config": {
+    "returnDetails": true
+  },
+  "fieldSchema": {
+    "name": "AutoInsuranceClaimForm",
+    "fields": {
+      "insurance_company": {
+        "type": "string",
+        "method": "extract",
+        "description": "Insurance company name, e.g. Contoso Insurance"
+      },
+      "claim_number": {
+        "type": "string",
+        "method": "extract",
+        "description": "Claim number, e.g. CLM987654"
+      },
+      "policy_number": {
+        "type": "string",
+        "method": "extract",
+        "description": "Policy number, e.g. AUTO123456"
+      },
+      "policyholder_information": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "method": "extract",
+            "description": "Policyholder full name, e.g. Chad Brooks"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string",
+                "method": "extract",
+                "description": "Street address, e.g. 123 Main St."
+              },
+              "city": {
+                "type": "string",
+                "method": "extract",
+                "description": "City, e.g. Macon"
+              },
+              "state": {
+                "type": "string",
+                "method": "extract",
+                "description": "State, e.g. GA"
+              },
+              "postal_code": {
+                "type": "string",
+                "method": "extract",
+                "description": "Postal code, e.g. 31201"
+              },
+              "country": {
+                "type": "string",
+                "method": "extract",
+                "description": "Country, e.g. USA"
+              }
+            },
+            "description": "Policyholder address, e.g. 123 Main Street, Macon, GA 31201"
+          },
+          "phone": {
+            "type": "string",
+            "method": "extract",
+            "description": "Policyholder phone number, e.g. (555) 555-1212"
+          },
+          "email": {
+            "type": "string",
+            "method": "extract",
+            "description": "Policyholder email address, e.g. chad.brooks@example.com"
+          }
+        },
+        "description": "Policyholder information"
+      },
+      "policy_details": {
+        "type": "object",
+        "properties": {
+          "coverage_type": {
+            "type": "string",
+            "method": "extract",
+            "description": "Coverage type, e.g. Auto \u2013 Comprehensive"
+          },
+          "effective_date": {
+            "type": "string",
+            "method": "extract",
+            "description": "Policy effective date, e.g. 2025-01-01"
+          },
+          "expiration_date": {
+            "type": "string",
+            "method": "extract",
+            "description": "Policy expiration date, e.g. 2025-12-31"
+          },
+          "deductible": {
+            "type": "number",
+            "method": "extract",
+            "description": "Deductible amount, e.g. 500.0"
+          },
+          "deductible_currency": {
+            "type": "string",
+            "method": "extract",
+            "description": "Currency of the deductible, e.g. USD"
+          }
+        },
+        "description": "Policy details"
+      },
+      "incident_details": {
+        "type": "object",
+        "properties": {
+          "date_of_loss": {
+            "type": "string",
+            "method": "extract",
+            "description": "Date of loss, e.g. 2025-11-28"
+          },
+          "time_of_loss": {
+            "type": "string",
+            "method": "extract",
+            "description": "Time of loss, e.g. 14:15"
+          },
+          "location": {
+            "type": "string",
+            "method": "extract",
+            "description": "Incident location, e.g. Parking lot near 123 Main Street, Macon, GA"
+          },
+          "cause_of_loss": {
+            "type": "string",
+            "method": "extract",
+            "description": "Cause of loss, e.g. Low-speed collision with another vehicle"
+          },
+          "description": {
+            "type": "string",
+            "method": "extract",
+            "description": "Incident description, e.g. Minor dent and paint scratches; no structural damage"
+          },
+          "police_report_filed": {
+            "type": "boolean",
+            "method": "extract",
+            "description": "Whether a police report was filed"
+          },
+          "police_report_number": {
+            "type": "string",
+            "method": "extract",
+            "description": "Police report number, e.g. GA-20251128-CR"
+          }
+        },
+        "description": "Incident details"
+      },
+      "vehicle_information": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer",
+            "method": "extract",
+            "description": "Vehicle year, e.g. 2022"
+          },
+          "make": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle make, e.g. Toyota"
+          },
+          "model": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle model, e.g. Camry"
+          },
+          "trim": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle trim, e.g. SE"
+          },
+          "vin": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle VIN, e.g. 4T1G11AK2NU123456"
+          },
+          "license_plate": {
+            "type": "string",
+            "method": "extract",
+            "description": "License plate, e.g. GA-ABC123"
+          },
+          "mileage": {
+            "type": "integer",
+            "method": "extract",
+            "description": "Mileage, e.g. 28450"
+          }
+        },
+        "description": "Vehicle information"
+      },
+      "damage_assessment": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "item_description": {
+                  "type": "string",
+                  "method": "extract",
+                  "description": "Damaged item/area description, e.g. Right-front quarter panel"
+                },
+                "date_acquired": {
+                  "type": "string",
+                  "method": "extract",
+                  "description": "Date acquired (if present), e.g. 2022-03-15"
+                },
+                "cost_new": {
+                  "type": "number",
+                  "method": "extract",
+                  "description": "Cost when new, e.g. 1200.0"
+                },
+                "cost_new_currency": {
+                  "type": "string",
+                  "method": "extract",
+                  "description": "Currency of cost_new, e.g. USD"
+                },
+                "repair_estimate": {
+                  "type": "number",
+                  "method": "extract",
+                  "description": "Repair estimate, e.g. 350.0"
+                },
+                "repair_estimate_currency": {
+                  "type": "string",
+                  "method": "extract",
+                  "description": "Currency of repair_estimate, e.g. USD"
+                }
+              }
+            },
+            "method": "extract",
+            "description": "List of damage assessment line items"
+          },
+          "total_estimated_repair": {
+            "type": "number",
+            "method": "extract",
+            "description": "Total estimated repair, e.g. 500.0"
+          },
+          "total_estimated_repair_currency": {
+            "type": "string",
+            "method": "extract",
+            "description": "Currency of total_estimated_repair, e.g. USD"
+          }
+        },
+        "description": "Damage assessment"
+      },
+      "supporting_documents": {
+        "type": "object",
+        "properties": {
+          "photos_of_damage": {
+            "type": "boolean",
+            "method": "extract",
+            "description": "Whether photos of damage are included"
+          },
+          "police_report_copy": {
+            "type": "boolean",
+            "method": "extract",
+            "description": "Whether a police report copy is included"
+          },
+          "repair_shop_estimate": {
+            "type": "boolean",
+            "method": "extract",
+            "description": "Whether a repair shop estimate is included"
+          },
+          "other": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "method": "extract",
+            "description": "Other supporting documents"
+          }
+        },
+        "description": "Supporting documents"
+      },
+      "declaration": {
+        "type": "object",
+        "properties": {
+          "statement": {
+            "type": "string",
+            "method": "extract",
+            "description": "Declaration statement text"
+          },
+          "signature": {
+            "type": "object",
+            "properties": {
+              "signatory": {
+                "type": "string",
+                "method": "extract",
+                "description": "Name of the signatory"
+              },
+              "is_signed": {
+                "type": "boolean",
+                "method": "extract",
+                "description": "Indicates if the form is signed. GPT should check whether it has signature in image files. if there is Sign, fill it up as True"
+              }
+            },
+            "description": "Signature"
+          },
+          "date": {
+            "type": "string",
+            "method": "extract",
+            "description": "Signature date, e.g. 2025-12-01"
+          }
+        },
+        "description": "Declaration"
+      },
+      "submission_instructions": {
+        "type": "object",
+        "properties": {
+          "submission_email": {
+            "type": "string",
+            "method": "extract",
+            "description": "Submission email address, e.g. claims@contosoinsurance.com"
+          },
+          "portal_url": {
+            "type": "string",
+            "method": "extract",
+            "description": "Claims portal URL, if present"
+          },
+          "notes": {
+            "type": "string",
+            "method": "extract",
+            "description": "Additional submission notes"
+          }
+        },
+        "description": "Submission instructions"
+      }
+    }
+  },
+  "models": {
+    "completion": "gpt-4.1-mini"
+  }
+}

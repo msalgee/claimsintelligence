@@ -1,0 +1,253 @@
+dsl_version: 1
+rule_set_id: fnol-gap-rules
+version: 0.2.0
+owner: "Claims Ops + Compliance"
+description: "Human-friendly DSL for FNOL GAP requirements and discrepancy checks."
+
+document_types:
+  # These map directly to your processing schemas/output types.
+  claim_form:
+    requirement_type: claim_form
+    schema: AutoInsuranceClaimForm
+  police_report:
+    requirement_type: police_report
+    schema: PoliceReportDocument
+  repair_estimate:
+    requirement_type: repair_estimate
+    schema: RepairEstimateDocument
+  damage_photo:
+    requirement_type: damage_photo
+    schema: DamagedVehicleImageAssessment
+
+inputs:
+  # Canonical, strict input fields used by rules.
+  # The GAP agent should infer these from extracted schema outputs when possible.
+  loss_type:
+    type: enum
+    allowed: [collision, theft, vehicle_theft, burglary, vandalism, hail, fire, glass, other, unknown]
+    meaning: "Primary category of loss. Use 'unknown' if not supported by evidence."
+  jurisdiction:
+    type: us_state_code
+    meaning: "Two-letter state code (e.g., CA, GA). Use 'unknown' if not supported by evidence."
+  loss_amount:
+    type: number
+    meaning: "Best available estimate of loss/repair amount in USD (prefer repair_estimate totals)."
+  has_injuries:
+    type: boolean_or_unknown
+    meaning: "Whether injuries are indicated. If not stated, use unknown."
+  involves_third_party:
+    type: boolean_or_unknown
+    meaning: "Whether another driver/vehicle/party is involved. If unclear, use unknown."
+  photos_provided_count:
+    type: integer
+    meaning: "Count of provided damage photos (or photo assessments)."
+
+required_documents:
+  # Simple, operator-friendly rules.
+  # "when" is a simple expression evaluated against inputs.
+  # Supported patterns (for now):
+  # - <field> exists
+  # - <field> == <value>
+  # - <field> in [a,b,c]
+  # - <field> >= <number> / <field> < <number>
+  - id: REQ-CLAIM-FORM-000
+    name: "Claim document required"
+    when: "loss_type exists"
+    require:
+      - type: claim_form
+        min_count: 1
+    severity: high
+    rationale: "Claim document is required to create and validate the FNOL claim."
+
+  - id: REQ-PR-THEFT-001
+    name: "Police report required for theft"
+    when: "loss_type in [theft, vehicle_theft, burglary]"
+    require:
+      - type: police_report
+        min_count: 1
+    severity: high
+    rationale: "Police report required for theft-related losses."
+
+  - id: REQ-PHOTO-COLLISION-002
+    name: "Damage photo required for collision"
+    when: "loss_type == collision and photos_provided_count < 1"
+    require:
+      - type: damage_photo
+        min_count: 1
+    severity: high
+    rationale: "At least one damage photo is required to support collision claims."
+
+  - id: REQ-ESTIMATE-AMOUNT-003
+    name: "Repair estimate required above threshold"
+    when: "loss_amount >= 2000"
+    require:
+      - type: repair_estimate
+        min_count: 1
+    severity: high
+    rationale: "Repair estimate required when loss amount is at or above $2,000."
+
+  - id: REQ-MED-INJURY-004
+    name: "Medical report required when injuries present"
+    when: "has_injuries == true"
+    require:
+      - type: medical_report
+        min_count: 1
+    severity: high
+    rationale: "Medical report required when injuries are indicated."
+
+  - id: REQ-ID-JURISDICTION-CA-005
+    name: "ID verification required in CA for third party involvement"
+    when: "jurisdiction == CA and involves_third_party == true"
+    require:
+      - type: id_verification
+        min_count: 1
+    severity: high
+    rationale: "ID verification required for CA claims involving third parties."
+
+  - id: REQ-PR-THIRD-PARTY-006
+    name: "Police report required when third party involved"
+    when: "involves_third_party == true"
+    require:
+      - type: police_report
+        min_count: 1
+    severity: high
+    rationale: "Police report required when third party involvement is indicated."
+
+discrepancy_checks:
+  # Discrepancy checks look for conflicts across documents.
+  # The agent should compare values across the specified sources and report any conflicts.
+  #
+  # check_type values:
+  #   "conflict" (default) — flag when two or more non-null values differ
+  #   "existence" — flag when the field is null/absent in ALL specified sources
+  - id: DISC-CLAIM-NUMBER-001
+    field: claim_number
+    sources: [claim_form, police_report, repair_estimate]
+    check_type: conflict
+    severity: critical
+    rationale: "Claim number should match across all documents when present."
+
+  - id: DISC-CLAIM-NUMBER-002
+    field: claim_number
+    sources: [claim_form, police_report, repair_estimate]
+    check_type: existence
+    severity: medium
+    rationale: "Claim number should exist in at least one document for tracking purposes."
+
+  - id: DISC-POLICY-NUMBER-001
+    field: policy_number
+    sources: [claim_form, police_report, repair_estimate]
+    check_type: conflict
+    severity: critical
+    rationale: "Policy number should match across all documents when present."
+
+  - id: DISC-DATE-OF-LOSS-001
+    field: date_of_loss
+    sources: [claim_form, police_report]
+    check_type: conflict
+    severity: high
+    rationale: "Date of loss should be consistent across authoritative sources."
+
+  - id: DISC-VEHICLE-VIN-001
+    field: vin
+    sources: [claim_form, police_report, repair_estimate]
+    check_type: conflict
+    severity: critical
+    rationale: "VIN identifies the vehicle and should match when present."
+
+  - id: DISC-VEHICLE-PLATE-001
+    field: license_plate
+    sources: [claim_form, police_report, repair_estimate, damage_photo]
+    check_type: conflict
+    severity: medium
+    rationale: "Plate can be missing/masked but should not conflict when present."
+
+  - id: DISC-ESTIMATE-TOTAL-001
+    field: total_estimate
+    sources: [claim_form, repair_estimate]
+    check_type: conflict
+    severity: low
+    tolerance: 5
+    rationale: "Totals should agree to within a few dollars; any wider gap is surfaced for adjuster review (a downstream explainer labels variances that match a typical sales-tax / GST rate \u2014 e.g. NZ GST 15%, AU GST 10%, US 4\u201311% \u2014 as benign and escalates the rest)."
+
+  - id: DISC-DAMAGE-DESCRIPTION-001
+    field: damage_description
+    sources: [claim_form, repair_estimate, damage_photo]
+    check_type: conflict
+    severity: low
+    rationale: "Damage descriptions should be broadly consistent. Flag if documents describe damage in contradictory areas or types (e.g., front damage vs rear damage), not minor wording differences. If photos show additional damage not mentioned in the claim form, note it."
+
+observation_triggers:
+  # These are NOT formal gaps or discrepancies, but noteworthy findings the agent
+  # should surface as informational observations. They help adjusters identify
+  # items that may need follow-up but do not constitute policy violations.
+  #
+  # The agent evaluates each trigger and includes a finding in the "observations"
+  # output if the condition is met.
+  - id: OBS-NO-ESTIMATE-001
+    name: "No repair estimate available"
+    when: "loss_amount == null or loss_amount == unknown"
+    severity: info
+    rationale: "No repair estimate or loss amount is available. Adjuster may need to arrange an estimate before claim can proceed."
+
+  - id: OBS-UNKNOWN-INJURIES-001
+    name: "Injury status undetermined"
+    when: "has_injuries == unknown"
+    severity: info
+    rationale: "Injury status could not be determined from available documents. Adjuster should confirm with claimant."
+
+  - id: OBS-MISSING-DEDUCTIBLE-001
+    name: "Deductible information not provided"
+    when: "always"
+    check: "deductible field is null or absent in claim_form"
+    severity: info
+    rationale: "Deductible amount is not stated in the documents. Coverage verification needed before payment calculation."
+
+  - id: OBS-PHOTO-EXTRA-DAMAGE-001
+    name: "Photos show damage not described in claim form"
+    when: "photos_provided_count >= 1"
+    check: "damage_photo documents describe damage areas or types not mentioned in claim_form damage description"
+    severity: info
+    rationale: "Damage visible in photos may exceed what was described in the claim form. Adjuster should verify full scope of damage."
+
+  - id: OBS-MULTI-CLAIM-001
+    name: "Multiple claim events may need separate files"
+    when: "always"
+    check: "Any document references a second loss event, a second damaged vehicle, or third-party bodily injuries that would normally be opened as a separate claim file (e.g., third-party BI alongside an own-damage collision)."
+    severity: medium
+    rationale: "More than one distinct exposure appears in the documents. Adjuster should confirm whether additional claim files (e.g., third-party BI, separate own-damage incident) need to be opened."
+
+  - id: OBS-THIRDPARTY-INCOMPLETE-001
+    name: "Third-party details incomplete"
+    when: "involves_third_party == true"
+    check: "Required third-party details are missing or partial across claim_form and police_report. Required: third-party driver name, third-party insurer, third-party vehicle plate, third-party contact (phone or email)."
+    severity: medium
+    rationale: "Third-party involvement is indicated but one or more of {driver name, insurer, plate, contact} is missing. Recovery and subrogation will stall without these."
+
+  - id: OBS-WITNESS-MISSING-001
+    name: "Witness named but contact details missing"
+    when: "always"
+    check: "police_report or claim_form names or references a witness, but witness contact details (name + phone or address) are not captured in either document."
+    severity: medium
+    rationale: "A witness was identified but cannot be contacted. Adjuster should obtain witness contact details before liability is finalised."
+
+  - id: OBS-PR-FIELDS-INCOMPLETE-001
+    name: "Police report present but key fields missing"
+    when: "always"
+    check: "A police_report document was provided, but one or more of {case/report number, agency or department name, officer name or badge, report date} is missing or unreadable."
+    severity: medium
+    rationale: "Police report is on file but is missing identifiers needed for follow-up (case number, agency, officer, date). Adjuster may need to request a clean copy from the issuing agency."
+
+  - id: OBS-COMMERCIAL-USE-HINT-001
+    name: "Possible commercial use on a private-motor policy"
+    when: "always"
+    check: |
+      Look for ANY signal across all 4 documents that the vehicle may have been in commercial / for-hire use at or around the loss:
+      - Keywords (case-insensitive) in claim_form, police_report, repair_estimate or damage_photo description: "rideshare", "ride share", "ride-share", "uber", "lyft", "doordash", "grubhub", "instacart", "delivery driver", "for hire", "for-hire", "livery", "tnc", "transportation network", "passenger fare", "fare", "airport pickup", "airport drop-off", "pickup zone", "rideshare placard", "tnc placard", "decal residue", "phone mount", "phone cradle", "dual cradle", "dash mount", "suction mount".
+      - Police report mentions an unidentified late-night passenger, a passenger paying a fare, or pickup/drop-off at an airport rideshare zone.
+      - Repair estimate line items reference removing/replacing rideshare placards, decals, dual phone cradles, dash phone mounts, or commercial signage.
+      - Loss circumstances inconsistent with personal use (e.g., late-night airport pickup-zone collision with a paying passenger).
+      - Mileage at loss is more than 3× the policy-declared annual mileage prorated by policy age (commercial-level usage).
+      Set condition_met=true if ANY of the above is present. In the finding, list every signal you found with its source document.
+    severity: medium
+    rationale: "One or more signals suggest the vehicle may have been used commercially (rideshare / delivery / for-hire) at the time of loss. Most personal-auto policies exclude such use. Adjuster should confirm with the insured before settling and pair this finding with the policy's commercial-use exclusion clause from the Coverage stage."

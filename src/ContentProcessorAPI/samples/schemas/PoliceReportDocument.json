@@ -1,0 +1,214 @@
+{
+  "baseAnalyzerId": "prebuilt-document",
+  "description": "Extracts structured incident, parties, vehicles, citations, and narrative fields from a US police report (auto incident).",
+  "config": {
+    "returnDetails": true
+  },
+  "fieldSchema": {
+    "name": "PoliceReportDocument",
+    "fields": {
+      "report_number": {
+        "type": "string",
+        "method": "extract",
+        "description": "Police report number, e.g. GA-20251128-CR"
+      },
+      "is_filed": {
+        "type": "boolean",
+        "method": "extract",
+        "description": "Whether a police report was filed"
+      },
+      "reporting_agency": {
+        "type": "string",
+        "method": "extract",
+        "description": "Reporting agency / department"
+      },
+      "insurance_company": {
+        "type": "string",
+        "method": "extract",
+        "description": "Insurance company name"
+      },
+      "claim_number": {
+        "type": "string",
+        "method": "extract",
+        "description": "Claim number"
+      },
+      "policy_number": {
+        "type": "string",
+        "method": "extract",
+        "description": "Policy number"
+      },
+      "reporting_party": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "method": "extract",
+            "description": "Full name of reporting party"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string",
+                "method": "extract",
+                "description": "Street address, e.g. 123 Main St."
+              },
+              "city": {
+                "type": "string",
+                "method": "extract",
+                "description": "City, e.g. Macon"
+              },
+              "state": {
+                "type": "string",
+                "method": "extract",
+                "description": "State, e.g. GA"
+              },
+              "postal_code": {
+                "type": "string",
+                "method": "extract",
+                "description": "Postal code, e.g. 31201"
+              },
+              "country": {
+                "type": "string",
+                "method": "extract",
+                "description": "Country, e.g. USA"
+              }
+            },
+            "description": "Address of reporting party"
+          },
+          "phone": {
+            "type": "string",
+            "method": "extract",
+            "description": "Phone number"
+          },
+          "email": {
+            "type": "string",
+            "method": "extract",
+            "description": "Email address"
+          }
+        },
+        "description": "Reporting party information"
+      },
+      "incident": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "method": "extract",
+            "description": "Incident date, e.g. 2025-11-28"
+          },
+          "time": {
+            "type": "string",
+            "method": "extract",
+            "description": "Incident time, e.g. 14:15"
+          },
+          "location": {
+            "type": "string",
+            "method": "extract",
+            "description": "Incident location"
+          },
+          "cause": {
+            "type": "string",
+            "method": "extract",
+            "description": "Cause of incident"
+          },
+          "narrative": {
+            "type": "string",
+            "method": "extract",
+            "description": "Narrative/description of what happened"
+          }
+        },
+        "description": "Incident details"
+      },
+      "vehicles": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "year": {
+              "type": "integer",
+              "method": "extract",
+              "description": "Vehicle year, e.g. 2022"
+            },
+            "make": {
+              "type": "string",
+              "method": "extract",
+              "description": "Vehicle make, e.g. Toyota"
+            },
+            "model": {
+              "type": "string",
+              "method": "extract",
+              "description": "Vehicle model, e.g. Camry"
+            },
+            "trim": {
+              "type": "string",
+              "method": "extract",
+              "description": "Vehicle trim, e.g. SE"
+            },
+            "vin": {
+              "type": "string",
+              "method": "extract",
+              "description": "Vehicle VIN"
+            },
+            "license_plate": {
+              "type": "string",
+              "method": "extract",
+              "description": "License plate"
+            },
+            "mileage": {
+              "type": "integer",
+              "method": "extract",
+              "description": "Mileage"
+            }
+          }
+        },
+        "method": "extract",
+        "description": "Vehicles involved"
+      },
+      "damage_summary": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "item_description": {
+                  "type": "string",
+                  "method": "extract",
+                  "description": "Damaged item/area description"
+                },
+                "repair_estimate": {
+                  "type": "number",
+                  "method": "extract",
+                  "description": "Repair estimate amount"
+                },
+                "repair_estimate_currency": {
+                  "type": "string",
+                  "method": "extract",
+                  "description": "Currency of repair_estimate, e.g. USD"
+                }
+              }
+            },
+            "method": "extract",
+            "description": "List of damage items"
+          },
+          "total_estimated_repair": {
+            "type": "number",
+            "method": "extract",
+            "description": "Total estimated repair amount"
+          },
+          "total_estimated_repair_currency": {
+            "type": "string",
+            "method": "extract",
+            "description": "Currency of total_estimated_repair, e.g. USD"
+          }
+        },
+        "description": "Damage summary"
+      }
+    }
+  },
+  "models": {
+    "completion": "gpt-4.1-mini"
+  }
+}

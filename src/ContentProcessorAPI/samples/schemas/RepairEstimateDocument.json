@@ -1,0 +1,236 @@
+{
+  "baseAnalyzerId": "prebuilt-document",
+  "description": "Extracts structured shop, vehicle, line items, totals, and notes from an auto body repair estimate.",
+  "config": {
+    "returnDetails": true
+  },
+  "fieldSchema": {
+    "name": "RepairEstimateDocument",
+    "fields": {
+      "estimate_number": {
+        "type": "string",
+        "method": "extract",
+        "description": "Estimate number, e.g. EST-20251130"
+      },
+      "date": {
+        "type": "string",
+        "method": "extract",
+        "description": "Estimate date, e.g. 2025-11-30"
+      },
+      "prepared_by": {
+        "type": "string",
+        "method": "extract",
+        "description": "Prepared by / shop name, e.g. Macon Auto Body & Paint"
+      },
+      "shop_address": {
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string",
+            "method": "extract",
+            "description": "Street address, e.g. 456 Repair Lane"
+          },
+          "city": {
+            "type": "string",
+            "method": "extract",
+            "description": "City, e.g. Macon"
+          },
+          "state": {
+            "type": "string",
+            "method": "extract",
+            "description": "State, e.g. GA"
+          },
+          "postal_code": {
+            "type": "string",
+            "method": "extract",
+            "description": "Postal code, e.g. 31201"
+          },
+          "country": {
+            "type": "string",
+            "method": "extract",
+            "description": "Country, e.g. USA"
+          }
+        },
+        "description": "Shop address"
+      },
+      "shop_phone": {
+        "type": "string",
+        "method": "extract",
+        "description": "Shop phone number"
+      },
+      "customer_name": {
+        "type": "string",
+        "method": "extract",
+        "description": "Customer name, e.g. Chad Brooks"
+      },
+      "vehicle": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer",
+            "method": "extract",
+            "description": "Vehicle year, e.g. 2022"
+          },
+          "make": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle make, e.g. Toyota"
+          },
+          "model": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle model, e.g. Camry"
+          },
+          "trim": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle trim, e.g. SE"
+          },
+          "vin": {
+            "type": "string",
+            "method": "extract",
+            "description": "Vehicle VIN, e.g. 4T1G11AK2NU123456"
+          },
+          "license_plate": {
+            "type": "string",
+            "method": "extract",
+            "description": "License plate, e.g. GA-ABC123"
+          }
+        },
+        "description": "Vehicle information"
+      },
+      "damage_description": {
+        "type": "string",
+        "method": "extract",
+        "description": "Damage description / narrative"
+      },
+      "repair_details": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "service_description": {
+              "type": "string",
+              "method": "extract",
+              "description": "Service description, e.g. Dent repair (quarter panel)"
+            },
+            "labor_hours": {
+              "type": "number",
+              "method": "extract",
+              "description": "Labor hours, e.g. 2.0"
+            },
+            "rate_per_hour": {
+              "type": "number",
+              "method": "extract",
+              "description": "Labor rate per hour, e.g. 75.0"
+            },
+            "rate_per_hour_currency": {
+              "type": "string",
+              "method": "extract",
+              "description": "Currency for rate_per_hour, e.g. USD"
+            },
+            "parts_cost": {
+              "type": "number",
+              "method": "extract",
+              "description": "Parts cost, e.g. 150.0"
+            },
+            "parts_cost_currency": {
+              "type": "string",
+              "method": "extract",
+              "description": "Currency for parts_cost, e.g. USD"
+            },
+            "materials_cost": {
+              "type": "number",
+              "method": "extract",
+              "description": "Materials/supplies cost, e.g. 50.0"
+            },
+            "materials_cost_currency": {
+              "type": "string",
+              "method": "extract",
+              "description": "Currency for materials_cost, e.g. USD"
+            },
+            "total": {
+              "type": "number",
+              "method": "extract",
+              "description": "Line total amount"
+            },
+            "total_currency": {
+              "type": "string",
+              "method": "extract",
+              "description": "Currency for total, e.g. USD"
+            }
+          }
+        },
+        "method": "extract",
+        "description": "Repair detail line items"
+      },
+      "subtotal": {
+        "type": "number",
+        "method": "extract",
+        "description": "Subtotal amount"
+      },
+      "subtotal_currency": {
+        "type": "string",
+        "method": "extract",
+        "description": "Currency for subtotal, e.g. USD"
+      },
+      "tax_rate": {
+        "type": "string",
+        "method": "extract",
+        "description": "Tax rate, e.g. 7%"
+      },
+      "tax_amount": {
+        "type": "number",
+        "method": "extract",
+        "description": "Tax amount, e.g. 24.50"
+      },
+      "tax_currency": {
+        "type": "string",
+        "method": "extract",
+        "description": "Currency for tax_amount, e.g. USD"
+      },
+      "total_estimate": {
+        "type": "number",
+        "method": "extract",
+        "description": "Total estimate amount, e.g. 374.50"
+      },
+      "total_estimate_currency": {
+        "type": "string",
+        "method": "extract",
+        "description": "Currency for total_estimate, e.g. USD"
+      },
+      "notes": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "method": "extract",
+        "description": "Notes on the estimate"
+      },
+      "authorized_signature": {
+        "type": "object",
+        "properties": {
+          "signatory": {
+            "type": "string",
+            "method": "extract",
+            "description": "Name of the signatory"
+          },
+          "is_signed": {
+            "type": "boolean",
+            "method": "extract",
+            "description": "Indicates if the document is signed. GPT should check whether it has signature in image files. if there is Sign, fill it up as True"
+          }
+        },
+        "description": "Authorized signature"
+      },
+      "authorized_signature_date": {
+        "type": "string",
+        "method": "extract",
+        "description": "Signature date, e.g. 2025-11-30"
+      }
+    }
+  },
+  "models": {
+    "completion": "gpt-4.1-mini"
+  }
+}

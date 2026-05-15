@@ -1,0 +1,161 @@
+{
+  "$schema_description": "Filterable metadata index for member-held auto policies. Each entry corresponds to one .md file in this folder. Used by the member-policies-index seed endpoint to populate filterable fields in the Azure AI Search index for exact-match lookup by policy_number. This is the authoritative policy-contract corpus, separate from the advisory handling-guidance corpus. Do not edit by hand without also updating the corresponding .md file.",
+  "policies": [
+    {
+      "policy_number": "NM-AUTO-554301",
+      "source_filename": "NM-AUTO-554301.md",
+      "form_version": "NMI-AUTO-WA-2025.08",
+      "carrier": "Northwind Mutual Insurance",
+      "state": "WA",
+      "effective_date": "2025-08-01",
+      "expiration_date": "2026-07-31",
+      "named_insureds": ["Marcus Bell"],
+      "excluded_drivers": [],
+      "covered_vehicles": [
+        {
+          "year": 2023,
+          "make": "Honda",
+          "model": "Civic",
+          "trim": "EX-L",
+          "vin": "2HGFE2F58NH512784",
+          "comprehensive_deductible": 250,
+          "collision_deductible": 500
+        }
+      ],
+      "endorsements": ["NMI-GLASS-WA-12", "NMI-OEM-08", "NMI-AMEND-WA-2025"],
+      "lienholders": {
+        "2HGFE2F58NH512784": "Evergreen Credit Union"
+      },
+      "status": "ACTIVE"
+    },
+    {
+      "policy_number": "NM-AUTO-554302",
+      "source_filename": "NM-AUTO-554302.md",
+      "form_version": "CM-AUTO-FORM-2024-NM-v3",
+      "carrier": "Contoso Mutual Insurance Company",
+      "state": "NM",
+      "effective_date": "2025-12-01",
+      "expiration_date": "2026-12-01",
+      "named_insureds": ["Camille Roy"],
+      "excluded_drivers": [],
+      "covered_vehicles": [
+        {
+          "year": 2018,
+          "make": "Subaru",
+          "model": "Outback",
+          "trim": "Limited",
+          "vin": "4S4BSANC2J3287104",
+          "comprehensive_deductible": 1000,
+          "collision_deductible": 1000
+        }
+      ],
+      "endorsements": ["CM-AMEND-NM-2024", "CM-GAP-15"],
+      "lienholders": {},
+      "status": "ACTIVE"
+    },
+    {
+      "policy_number": "NM-AUTO-554303",
+      "source_filename": "NM-AUTO-554303.md",
+      "form_version": "CM-AUTO-FORM-2024-NM-v3",
+      "carrier": "Contoso Mutual Insurance Company",
+      "state": "NM",
+      "effective_date": "2026-01-15",
+      "expiration_date": "2027-01-15",
+      "named_insureds": ["Priya Anand"],
+      "excluded_drivers": [],
+      "covered_vehicles": [
+        {
+          "year": 2022,
+          "make": "Toyota",
+          "model": "Camry",
+          "trim": "SE Hybrid",
+          "vin": "4T1G31AK2NU631029",
+          "comprehensive_deductible": 500,
+          "collision_deductible": 500
+        }
+      ],
+      "endorsements": ["CM-AMEND-NM-2024", "CM-RSE-22"],
+      "lienholders": {
+        "4T1G31AK2NU631029": "Toyota Financial Services"
+      },
+      "status": "ACTIVE"
+    },
+    {
+      "policy_number": "NM-AUTO-554304",
+      "source_filename": "NM-AUTO-554304.md",
+      "form_version": "CM-AUTO-FORM-2024-NM-v3",
+      "carrier": "Contoso Mutual Insurance Company",
+      "state": "NM",
+      "effective_date": "2025-04-01",
+      "expiration_date": "2026-03-31",
+      "named_insureds": ["Donovan Pierce"],
+      "excluded_drivers": [],
+      "covered_vehicles": [
+        {
+          "year": 2017,
+          "make": "Ford",
+          "model": "F-150",
+          "trim": "XLT SuperCrew 4WD",
+          "vin": "1FTEW1EF8HKD42891",
+          "comprehensive_deductible": 500,
+          "collision_deductible": 500
+        }
+      ],
+      "endorsements": ["CM-AMEND-NM-2024"],
+      "lienholders": {},
+      "status": "LAPSED"
+    },
+    {
+      "policy_number": "SHI-AUTO-708216",
+      "source_filename": "SHI-AUTO-708216.md",
+      "form_version": "SHI-AUTO-CO-2025.09",
+      "carrier": "Summit Heritage Insurance",
+      "state": "CO",
+      "effective_date": "2025-09-15",
+      "expiration_date": "2026-09-14",
+      "named_insureds": ["Priya Ramaswamy"],
+      "excluded_drivers": [],
+      "covered_vehicles": [
+        {
+          "year": 2024,
+          "make": "Toyota",
+          "model": "RAV4",
+          "trim": "XLE Hybrid",
+          "vin": "JTMRWRFV5RD082914",
+          "comprehensive_deductible": 500,
+          "collision_deductible": 500
+        }
+      ],
+      "endorsements": ["SHI-GLASS-CO-07", "SHI-OEM-24", "SHI-WTHR-01"],
+      "lienholders": {
+        "JTMRWRFV5RD082914": "Toyota Financial Services"
+      },
+      "status": "ACTIVE"
+    },
+    {
+      "policy_number": "NM-AUTO-661820",
+      "source_filename": "NM-AUTO-661820.md",
+      "form_version": "NMI-AUTO-WA-2025.08",
+      "carrier": "Northwind Mutual Insurance",
+      "state": "WA",
+      "effective_date": "2025-11-01",
+      "expiration_date": "2026-10-31",
+      "named_insureds": ["Devon Park"],
+      "excluded_drivers": [],
+      "covered_vehicles": [
+        {
+          "year": 2022,
+          "make": "Toyota",
+          "model": "Camry",
+          "trim": "SE Sedan",
+          "vin": "4T1G11AK4NU712936",
+          "comprehensive_deductible": 500,
+          "collision_deductible": 500
+        }
+      ],
+      "endorsements": ["NMI-AMEND-WA-2025", "NMI-OEM-08"],
+      "lienholders": {},
+      "status": "ACTIVE"
+    }
+  ]
+}

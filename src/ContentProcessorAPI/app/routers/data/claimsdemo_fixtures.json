@@ -1,0 +1,128 @@
+{
+  "persona": {
+    "claim_id_prefix": "DEMO",
+    "claimant_name": "Jordan Reyes",
+    "policy_number": "MP-784512",
+    "incident_summary": "Single-vehicle collision on Highway 41, late evening, with minor third-party damage to roadside fencing."
+  },
+  "documents": [
+    { "id": "doc-claim-form", "name": "claim_form.pdf",            "category": "Claim Form",          "pages": 3, "size_kb": 412 },
+    { "id": "doc-police",     "name": "police_report.pdf",         "category": "Police Report",       "pages": 4, "size_kb": 658 },
+    { "id": "doc-estimate",   "name": "repair_estimate.pdf",       "category": "Repair Estimate",     "pages": 2, "size_kb": 287 },
+    { "id": "doc-photo",      "name": "damage_photo.jpg",          "category": "Damage Photo",        "pages": 1, "size_kb": 1842 },
+    { "id": "doc-policy",     "name": "member_policy.pdf",         "category": "Member Policy",       "pages": 12, "size_kb": 1124 },
+    { "id": "doc-priors",     "name": "prior_claims_history.pdf",  "category": "Prior Claims",        "pages": 1, "size_kb": 96 },
+    { "id": "doc-third",      "name": "third_party_details.pdf",   "category": "Third-Party Details", "pages": 1, "size_kb": 88 },
+    { "id": "doc-medical",    "name": "medical_note.pdf",          "category": "Medical Note",        "pages": 1, "size_kb": 102 }
+  ],
+  "classification": [
+    { "file_id": "doc-claim-form", "label": "Claim Form",          "confidence": 0.98, "method": "ContentUnderstanding+GPT" },
+    { "file_id": "doc-police",     "label": "Police Report",       "confidence": 0.97, "method": "ContentUnderstanding+GPT" },
+    { "file_id": "doc-estimate",   "label": "Repair Estimate",     "confidence": 0.95, "method": "ContentUnderstanding+GPT" },
+    { "file_id": "doc-photo",      "label": "Damage Photo",        "confidence": 0.92, "method": "Vision+GPT" },
+    { "file_id": "doc-policy",     "label": "Member Policy",       "confidence": 0.99, "method": "ContentUnderstanding+GPT" },
+    { "file_id": "doc-priors",     "label": "Prior Claims",        "confidence": 0.94, "method": "ContentUnderstanding+GPT" },
+    { "file_id": "doc-third",      "label": "Third-Party Details", "confidence": 0.93, "method": "ContentUnderstanding+GPT" },
+    { "file_id": "doc-medical",    "label": "Medical Note",        "confidence": 0.91, "method": "ContentUnderstanding+GPT" }
+  ],
+  "entities": {
+    "timeline": [
+      { "date": "2026-04-12T19:45:00Z", "label": "Incident occurred",        "source_doc": "doc-claim-form" },
+      { "date": "2026-04-12T20:18:00Z", "label": "Police arrived on scene",  "source_doc": "doc-police" },
+      { "date": "2026-04-13T09:02:00Z", "label": "Claim submitted online",   "source_doc": "doc-claim-form" },
+      { "date": "2026-04-14T11:30:00Z", "label": "Vehicle inspected",        "source_doc": "doc-estimate" },
+      { "date": "2026-04-15T14:15:00Z", "label": "Medical examination",      "source_doc": "doc-medical" },
+      { "date": "2026-04-17T10:00:00Z", "label": "Repair quote finalised",   "source_doc": "doc-estimate" }
+    ],
+    "people": [
+      { "id": "p-claimant", "role": "Claimant",       "name": "Jordan Reyes",     "contact": "+1 415-555-0182" },
+      { "id": "p-driver",   "role": "Driver",         "name": "Jordan Reyes",     "contact": "Same as claimant" },
+      { "id": "p-witness",  "role": "Witness",        "name": "Maria Chen",       "contact": "+1 415-555-0144" },
+      { "id": "p-third",    "role": "Third Party",    "name": "Devon Park",       "contact": "+1 415-555-0166" },
+      { "id": "p-officer",  "role": "Police Officer", "name": "Sgt. R. Whitman",  "contact": "Badge 4821, SFPD" },
+      { "id": "p-doctor",   "role": "Examining Doctor", "name": "Dr. P. Acharya", "contact": "Bay General Clinic" }
+    ],
+    "vehicles": [
+      { "id": "v-insured", "make": "Subaru", "model": "Outback", "year": 2022, "vin": "JF2SKAUC4NH523117", "registration": "8KQR412", "owner": "Jordan Reyes" }
+    ],
+    "locations": [
+      { "id": "l-incident", "label": "Highway 41 mile-marker 38", "lat": 36.5784, "lng": -119.7234 },
+      { "id": "l-clinic",   "label": "Bay General Clinic",         "lat": 37.7849, "lng": -122.4094 }
+    ]
+  },
+  "fraud_check": {
+    "risk_score": 28,
+    "risk_band": "Low-Medium",
+    "findings": [
+      {
+        "id": "f-date-mismatch",
+        "severity": "warning",
+        "title": "Incident time differs by 33 minutes between claim form and police report",
+        "rationale": "Claim form lists incident time as 19:45 local. Police report records arrival at 20:18 with 'incident reported moments earlier' which would imply ~20:10. Within plausible reporting variance but flagged for adjuster review.",
+        "contributing_docs": ["doc-claim-form", "doc-police"]
+      },
+      {
+        "id": "f-vin-typo",
+        "severity": "info",
+        "title": "VIN partial match between repair estimate and police report",
+        "rationale": "Estimate VIN matches policy exactly. Police report transcribes the last 6 digits with one digit transposition (523171 vs 523117) — likely transcription error rather than fraud signal.",
+        "contributing_docs": ["doc-estimate", "doc-police"]
+      },
+      {
+        "id": "f-prior-pattern",
+        "severity": "info",
+        "title": "Prior claim 14 months ago for similar single-vehicle damage",
+        "rationale": "Prior claim was approved and paid out without issue. Frequency is within normal range for this customer segment.",
+        "contributing_docs": ["doc-priors"]
+      }
+    ]
+  },
+  "business_checks": [
+    { "id": "bc-1", "rule": "Checking if multiple claims are needed",                                  "status": "pass", "summary": "Single incident, single policy — no split required.",            "details": "All damage and injury reported is attributable to one event on 2026-04-12 under policy MP-784512." },
+    { "id": "bc-2", "rule": "Checking if registration details are provided",                            "status": "pass", "summary": "Registration 8KQR412 verified against DMV record.",              "details": "Vehicle registration extracted from claim form matches DMV record on file as of 2026-03-01." },
+    { "id": "bc-3", "rule": "Checking if all required third party details are provided",               "status": "warn", "summary": "Third-party insurer policy number missing.",                     "details": "We have name, contact, and licence plate for Devon Park, but the third-party insurance policy number was not captured. Recommend contacting third party for completeness." },
+    { "id": "bc-4", "rule": "Checking if claim relates to a high care customer",                       "status": "pass", "summary": "Customer is on Standard tier, no high-care flags.",              "details": "Account flags reviewed: no vulnerability indicators, no recent complaints, no special-handling notes." },
+    { "id": "bc-5", "rule": "Checking if there's a case of commercial use on a private motor policy",  "status": "pass", "summary": "Personal use only — incident at 19:45 weekend, no commercial signals.", "details": "Policy MP-784512 is rated for personal use. Incident time, location, and reported purpose ('returning home from family visit') all consistent with personal use." },
+    { "id": "bc-6", "rule": "Checking if police case details are provided",                             "status": "pass", "summary": "Police case #2026-04-12-1187 attached.",                         "details": "Police report attached. Case number, attending officer, and report narrative all extracted successfully." },
+    { "id": "bc-7", "rule": "Checking driver declaration details",                                     "status": "pass", "summary": "Driver matches policy holder, declaration complete.",            "details": "Declared driver Jordan Reyes is the named insured on policy MP-784512. Declaration signed and dated on claim form." }
+  ],
+  "summary": {
+    "markdown": "## Auto Claim — Jordan Reyes (Policy MP-784512)\n\nOn the evening of **12 April 2026 at approximately 19:45**, the insured Jordan Reyes was driving a 2022 Subaru Outback (VIN ...523117) southbound on Highway 41 near mile-marker 38 when the vehicle left the road in wet conditions and made contact with roadside fencing.\n\n**Damage:** Front-end body damage to the insured vehicle (estimated **$8,420**) and minor damage to ~12 ft of roadside fencing belonging to a third party, Devon Park (estimated **$640**).\n\n**Injuries:** Driver reported neck stiffness; medical examination on 15 April found mild whiplash. No other parties injured.\n\n**Witness:** Maria Chen, who was driving behind the insured at the time of the incident.\n\n**Police involvement:** SFPD attended (Sgt. R. Whitman, badge 4821), case #2026-04-12-1187. No citations issued.",
+    "key_facts": {
+      "incident_date": "2026-04-12",
+      "claimant": "Jordan Reyes",
+      "policy_number": "MP-784512",
+      "vehicle": "2022 Subaru Outback",
+      "incident_location": "Highway 41 mile-marker 38",
+      "estimated_repair_cost_usd": 8420,
+      "third_party_damage_cost_usd": 640,
+      "injuries": "Mild whiplash (driver only)",
+      "police_case_number": "2026-04-12-1187"
+    }
+  },
+  "recommendation": {
+    "stream_text": "Based on the documents and checks reviewed, this claim presents as a **straightforward single-vehicle incident** with one minor third-party property element.\n\nThe incident narrative is internally consistent across the claim form, police report, and witness statement. Damage estimates are within expected range for the reported impact. Medical findings are mild and consistent with the reported mechanism.\n\nThe one open item is the missing third-party insurance details, which should be obtained before final settlement to enable subrogation if applicable.\n\nGiven the low fraud-risk score (28/100), the consistent narrative, and the policy being in good standing, my recommendation is **Approve with conditions**.",
+    "policy_excerpts": [
+      { "id": "px-1", "section": "Section 4.2 — Comprehensive coverage",        "snippet": "Damage caused by collision with stationary objects (including roadside fixtures) is covered under comprehensive provisions, subject to the standard $500 deductible." },
+      { "id": "px-2", "section": "Section 7.1 — Third-party property",            "snippet": "Where the insured is liable for damage to third-party property, the insurer will indemnify the third party up to the property damage limit specified in the schedule (currently $50,000)." },
+      { "id": "px-3", "section": "Section 9.4 — Medical expenses",                "snippet": "Reasonable medical expenses arising from a covered incident are payable up to $5,000 per occupant of the insured vehicle." },
+      { "id": "px-4", "section": "Section 12.6 — Subrogation",                    "snippet": "The insurer reserves the right to recover amounts paid under this policy from any third party legally liable. The insured agrees to provide all reasonable assistance in pursuing such recovery." }
+    ],
+    "recommendation": {
+      "verdict": "Approve with conditions",
+      "confidence": 0.87,
+      "rationale": "Low fraud risk, consistent narrative, policy in good standing. Condition: obtain third-party insurance details before settlement."
+    },
+    "follow_ups": [
+      "Contact third party (Devon Park) to obtain insurance policy details for subrogation",
+      "Authorise repair estimate of $8,420 with preferred body shop network",
+      "Open property-damage settlement file for $640 third-party fencing repair"
+    ]
+  },
+  "email_draft": {
+    "to": "jordan.reyes@example.com",
+    "cc": "claims-records@contoso-insurance.com",
+    "subject": "Your claim CLM-2026-04-12-1187 — outcome and next steps",
+    "body": "Hi Jordan,\n\nThank you for getting in touch about the incident on **12 April 2026** involving your 2022 Subaru Outback (policy **MP-784512**). I have completed my initial review and wanted to share the outcome and what happens next.\n\n**Outcome:** Your claim has been approved, subject to one outstanding item (see below). I am authorising the repair estimate of **$8,420** with our preferred body shop network — they will be in touch within 2 business days to schedule the repair.\n\n**Outstanding item:** We still need the insurance policy details of the third party whose fencing was damaged (Devon Park). If you have these to hand, please reply to this email; otherwise we will follow up with them directly.\n\n**Medical:** Your 15 April examination findings are noted. Please keep us informed if any further treatment is recommended — covered medical costs are payable up to $5,000 under Section 9.4 of your policy.\n\nIf you have any questions, please reply to this email or call our claims line on 1-800-555-0102.\n\nKind regards,\nClaims Team — Contoso Insurance"
+  }
+}
